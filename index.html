@@ -1,0 +1,1883 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Webgewerk, Automatisierung &mdash; Entwurf &middot; Kira Moewes</title>
+<meta name="description" content="Entwurf einer Website. Beispielseite aus dem Portfolio von Kira Moewes.">
+<meta name="robots" content="noindex,nofollow">
+
+<style>
+/* Webgewerk — Design-Tokens
+   Quelle: Refero Style „Apple (España) design system"
+   Wer den Look ändern will, ändert diese Datei. Sonst nichts. */
+
+:root {
+  /* ---------- Farbe ---------- */
+  --c-accent:      #0071e3;  /* nur gefüllte CTA-Buttons */
+  --c-accent-deep: #0064c8;  /* Hover */
+  --c-link:        #0066cc;  /* Inline-Links */
+  --c-ember:       #b64400;  /* Badge */
+
+  --c-ink:         #1d1d1f;
+  --c-ink-2:       #474747;
+  --c-ink-3:       #707070;
+  --c-ink-4:       #777779;  /* „Quiet Dot" der Vorlage */
+  --c-hairline:    #d6d6d6;
+
+  --s-0:           #ffffff;  /* Seite, Karten */
+  --s-1:           #f5f5f7;  /* alternierende Bänder, Footer */
+  --s-2:           #e8e8ed;  /* Hover-Flächen */
+  --s-3:           #fafafc;  /* Nav nach dem Scrollen */
+
+  /* Finish-Töne — tragen die Farbe der Seite */
+  --f-sky:         #c8d8e0;
+  --f-citrus:      #dddc8c;
+  --f-starlight:   #f0e4d3;
+  --f-silver:      #e3e4e5;
+  --f-blush:       #e8d0d0;
+  --f-indigo:      #596680;
+  --f-midnight:    #2e3642;
+
+  /* ---------- Schrift ---------- */
+  /* System-Stack: SF Pro auf Apple-Geräten, sonst die jeweilige System-Grotesk.
+     Bewusst ohne Google Fonts — nichts wird von fremden Servern nachgeladen.
+     Wer Inter erzwingen will, legt die woff2-Dateien unter assets/fonts/ ab
+     und ergänzt hier eine @font-face-Regel. */
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                  "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-text:    "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                  "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --t-display:     clamp(44px, 8.2vw, 96px);
+  --t-heading-lg:  clamp(38px, 6.6vw, 80px);
+  --t-heading:     clamp(32px, 5vw, 56px);
+  --t-heading-sm:  clamp(26px, 3.4vw, 40px);
+  --t-subheading:  clamp(24px, 2.6vw, 32px);
+  --t-body-lg:     clamp(21px, 2.2vw, 28px);
+  --t-body:        21px;
+  --t-body-sm:     17px;
+  --t-caption:     14px;
+  --t-micro:       12px;
+
+  --lh-display: 1.04;
+  --lh-heading: 1.07;
+  --lh-body:    1.47;
+
+  --ls-display: -1.44px;
+  --ls-heading: -0.28px;
+  --ls-body:    -0.374px;
+
+  /* ---------- Raster ---------- */
+  --sp-1:  4px;   --sp-2:  8px;   --sp-3: 12px;  --sp-4: 16px;
+  --sp-5: 20px;   --sp-6: 24px;   --sp-7: 28px;  --sp-8: 32px;
+  --sp-10: 40px;  --sp-11: 44px;  --sp-12: 48px; --sp-13: 52px;
+  --sp-19: 76px;  --sp-20: 80px;  --sp-30: 120px; --sp-36: 144px;
+
+  --page:      1200px;
+  --page-pad:  22px;
+  --section:   clamp(72px, 10vw, 120px);
+  --card-pad:  28px;
+
+  /* ---------- Radien ---------- */
+  --r-link:   10px;
+  --r-card:   28px;
+  --r-badge:  36px;
+  --r-pill:   980px;
+
+  /* ---------- Bewegung ---------- */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur:  0.4s;
+}
+
+/* ============================================================
+   Grundlage
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--s-0);
+  color: var(--c-ink);
+  font-family: var(--font-text);
+  font-size: var(--t-body-sm);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.is-locked { overflow: hidden; }
+
+img, svg { max-width: 100%; display: block; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--c-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+
+a { color: var(--c-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+  border-radius: var(--r-link);
+}
+
+.num { font-feature-settings: "numr"; font-variant-numeric: tabular-nums; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--s-0); color: var(--c-ink);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-link); z-index: 100;
+}
+.skip:focus { left: var(--sp-4); top: var(--sp-4); }
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
+.wrap {
+  width: 100%;
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+}
+
+.section { padding-block: var(--section); }
+.section--tight { padding-block: clamp(48px, 6vw, 76px); }
+
+/* Rhythmus entsteht durch den Wechsel der Flächen, nicht durch Linien */
+.section--canvas { background: var(--s-1); }
+
+.section__head { max-width: 880px; margin-bottom: clamp(40px, 5vw, 64px); }
+.section__head .copy { margin-top: var(--sp-6); }
+.section__head--center { margin-inline: auto; text-align: center; }
+
+.eyebrow {
+  font-size: var(--t-caption);
+  font-weight: 600;
+  letter-spacing: -0.224px;
+  color: var(--c-ink-3);
+  margin-bottom: var(--sp-4);
+}
+
+.h-display {
+  font-size: var(--t-display);
+  font-weight: 700;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+.h-section {
+  font-size: var(--t-heading);
+  font-weight: 700;
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-heading);
+}
+
+.h-sub {
+  font-size: var(--t-heading-sm);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.lead {
+  font-size: var(--t-body-lg);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: 0.196px;
+  color: var(--c-ink);
+  margin-top: var(--sp-6);
+}
+
+.copy {
+  font-size: var(--t-body-sm);
+  line-height: var(--lh-body);
+  color: var(--c-ink-3);
+  max-width: 62ch;
+}
+
+.copy--ink { color: var(--c-ink); }
+
+/* ============================================================
+   Buttons und Links
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  font-family: var(--font-text);
+  font-size: var(--t-body-sm);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.374px;
+  padding: 11px var(--sp-4);
+  min-height: 44px;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.btn:hover { text-decoration: none; }
+
+/* Der einzige chromatische Button. Höchstens einer pro Sektion. */
+.btn--filled { background: var(--c-accent); color: #ffffff; padding-inline: var(--sp-5); }
+.btn--filled:hover { background: var(--c-accent-deep); }
+
+.btn--ghost { border-color: var(--c-ink); color: var(--c-ink); background: transparent; padding-inline: var(--sp-5); }
+.btn--ghost:hover { background: var(--c-ink); color: #ffffff; }
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+.btn-row--center { justify-content: center; }
+
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--c-link);
+  font-size: var(--t-body-sm);
+  text-decoration: none;
+}
+.arrow-link::after { content: "\203A"; font-size: 1.24em; line-height: 1; transform: translateY(-1px); }
+.arrow-link:hover { text-decoration: underline; }
+
+.badge {
+  display: inline-block;
+  border-radius: var(--r-badge);
+  padding: 4px var(--sp-3);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: -0.12px;
+  color: var(--c-ember);
+  background: rgba(182, 68, 0, 0.08);
+}
+
+/* ============================================================
+   Navigation — 44px, erhebt sich beim Scrollen
+   ============================================================ */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0);
+  transition: background-color var(--dur) var(--ease),
+              backdrop-filter var(--dur) var(--ease);
+}
+.nav.is-scrolled {
+  background: rgba(250, 250, 252, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.nav__inner {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+}
+
+.nav__logo {
+  font-family: var(--font-display);
+  font-size: var(--t-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  color: var(--c-ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.nav__logo:hover { text-decoration: none; }
+.nav__mark { width: 17px; height: 17px; flex: none; }
+
+.nav__menu { display: flex; align-items: center; gap: var(--sp-5); }
+
+.nav__link {
+  font-size: var(--t-micro);
+  font-weight: 400;
+  letter-spacing: -0.12px;
+  color: var(--c-ink);
+  text-decoration: none;
+  padding-block: var(--sp-2);
+}
+.nav__link:hover { color: var(--c-ink-3); text-decoration: none; }
+
+.nav__cta {
+  font-size: var(--t-micro);
+  min-height: 30px;
+  padding: 6px var(--sp-4);
+}
+
+.nav__burger {
+  display: none;
+  width: 40px; height: 40px;
+  margin-right: -8px;
+  background: none; border: 0; cursor: pointer;
+  align-items: center; justify-content: center;
+}
+.nav__burger span {
+  display: block; width: 17px; height: 1px;
+  background: var(--c-ink); position: relative;
+  transition: transform var(--dur) var(--ease);
+}
+.nav__burger span::before,
+.nav__burger span::after {
+  content: ""; position: absolute; left: 0;
+  width: 17px; height: 1px; background: var(--c-ink);
+  transition: transform var(--dur) var(--ease);
+}
+.nav__burger span::before { top: -5px; }
+.nav__burger span::after  { top: 5px; }
+.nav__burger[aria-expanded="true"] span { transform: rotate(45deg); }
+.nav__burger[aria-expanded="true"] span::before { transform: translateY(5px) rotate(-90deg); }
+.nav__burger[aria-expanded="true"] span::after  { opacity: 0; }
+
+@media (max-width: 860px) {
+  .nav__burger { display: inline-flex; }
+  .nav__menu {
+    position: fixed;
+    inset: 52px 0 auto 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--s-3);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    padding: var(--sp-4) var(--page-pad) var(--sp-8);
+    transform: translateY(-8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .nav__menu.is-open { opacity: 1; transform: none; pointer-events: auto; }
+  .nav__link { font-size: var(--t-body); padding-block: var(--sp-4); }
+  .nav__cta { margin-top: var(--sp-4); align-self: flex-start; font-size: var(--t-body-sm); min-height: 44px; padding: 11px var(--sp-5); }
+}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+
+.hero { padding-top: clamp(56px, 8vw, 96px); padding-bottom: 0; text-align: center; }
+.hero__eyebrow { color: var(--c-ink-3); font-size: var(--t-body-sm); margin-bottom: var(--sp-4); }
+.hero h1 { max-width: 22ch; margin-inline: auto; }
+.hero__lead {
+  font-size: var(--t-body-lg);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.196px;
+  color: var(--c-ink-3);
+  max-width: 52ch;
+  margin: var(--sp-6) auto 0;
+}
+.hero__note { font-size: var(--t-body-sm); color: var(--c-ink-3); margin-top: var(--sp-5); }
+
+.hero__visual {
+  margin-top: clamp(40px, 5vw, 64px);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.hero__visual img { width: 100%; height: auto; }
+
+/* Kennzahlen */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-8);
+  margin-top: clamp(48px, 6vw, 80px);
+  text-align: center;
+}
+.stat__value {
+  font-family: var(--font-display);
+  font-size: var(--t-heading-sm);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.4px;
+}
+.stat__label { font-size: var(--t-caption); color: var(--c-ink-3); margin-top: var(--sp-2); }
+
+@media (max-width: 700px) {
+  .stats { grid-template-columns: 1fr; gap: var(--sp-7); }
+}
+
+/* Vertrauensleiste */
+.trust { text-align: center; }
+.trust p { font-size: var(--t-body-sm); color: var(--c-ink-3); }
+.trust__row {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: var(--sp-6) var(--sp-10);
+  margin-top: var(--sp-7);
+}
+.trust__item {
+  font-family: var(--font-display);
+  font-size: var(--t-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--c-ink-4);
+}
+
+/* ============================================================
+   Karten
+   ============================================================ */
+
+.grid { display: grid; gap: var(--sp-5); }
+.grid--2 { grid-template-columns: repeat(2, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+.grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 980px) {
+  .grid--3, .grid--4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 660px) {
+  .grid--2, .grid--3, .grid--4 { grid-template-columns: 1fr; }
+}
+
+/* Karten: Radius 28, keine Schatten, keine Konturen */
+.card {
+  background: var(--s-0);
+  border-radius: var(--r-card);
+  padding: var(--card-pad);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.section--canvas .card { background: var(--s-0); }
+.section:not(.section--canvas) .card { background: var(--s-1); }
+
+.card__icon { width: 28px; height: 28px; color: var(--c-ink); margin-bottom: var(--sp-2); }
+.card h3 { font-size: var(--t-body); font-weight: 600; line-height: 1.24; letter-spacing: -0.4px; }
+.card p { font-size: var(--t-body-sm); color: var(--c-ink-3); }
+.card .arrow-link { margin-top: auto; padding-top: var(--sp-4); }
+
+/* ============================================================
+   Vorgehen
+   ============================================================ */
+
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-5); }
+@media (max-width: 980px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px)  { .steps { grid-template-columns: 1fr; } }
+
+.step { display: flex; flex-direction: column; gap: var(--sp-3); }
+.step__num {
+  font-family: var(--font-display);
+  font-size: var(--t-heading-sm);
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  color: var(--c-ink-4);
+}
+.step__rule { height: 1px; background: var(--c-hairline); margin-block: var(--sp-2); }
+.step h3 { font-size: var(--t-body); font-weight: 600; letter-spacing: -0.4px; }
+.step p { font-size: var(--t-body-sm); color: var(--c-ink-3); }
+.step__time { font-size: var(--t-caption); color: var(--c-ink-4); }
+
+/* ============================================================
+   Arbeiten
+   ============================================================ */
+
+.case {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(28px, 5vw, 76px);
+}
+.case + .case { margin-top: clamp(56px, 7vw, 100px); }
+.case--flip .case__media { order: 2; }
+
+.case__media { border-radius: var(--r-card); overflow: hidden; }
+.case__media img { width: 100%; height: auto; }
+
+.case__kicker { font-size: var(--t-caption); color: var(--c-ink-3); margin-bottom: var(--sp-3); }
+.case h3 { font-size: var(--t-heading-sm); font-weight: 600; line-height: 1.16; letter-spacing: -0.8px; }
+.case p { font-size: var(--t-body-sm); color: var(--c-ink-3); margin-top: var(--sp-5); max-width: 46ch; }
+
+.case__metrics { display: flex; flex-wrap: wrap; gap: var(--sp-10); margin-top: var(--sp-7); }
+.case__metric-value {
+  font-family: var(--font-display);
+  font-size: var(--t-heading-sm);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.8px;
+}
+.case__metric-label { font-size: var(--t-caption); color: var(--c-ink-3); margin-top: var(--sp-2); }
+
+@media (max-width: 860px) {
+  .case { grid-template-columns: 1fr; }
+  .case--flip .case__media { order: 0; }
+}
+
+/* ============================================================
+   Preise
+   ============================================================ */
+
+.price { position: relative; }
+.price__label { font-size: var(--t-caption); color: var(--c-ink-3); }
+.price h3 { font-size: var(--t-body); font-weight: 600; letter-spacing: -0.4px; }
+/* .card p ist spezifischer als .price__value — deshalb hier mitqualifizieren,
+   sonst fällt der Preis auf Fließtextgröße zurück. */
+.card .price__value {
+  font-family: var(--font-display);
+  color: var(--c-ink);
+  font-size: var(--t-heading-sm);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.8px;
+  margin-top: var(--sp-2);
+}
+.price__list { list-style: none; margin: var(--sp-5) 0 0; padding: 0; display: grid; gap: var(--sp-3); }
+.price__list li {
+  font-size: var(--t-body-sm);
+  color: var(--c-ink-3);
+  padding-left: var(--sp-6);
+  position: relative;
+}
+.price__list li::before {
+  content: "";
+  position: absolute; left: 0; top: 9px;
+  width: 11px; height: 6px;
+  border-left: 1.6px solid var(--c-ink-4);
+  border-bottom: 1.6px solid var(--c-ink-4);
+  transform: rotate(-45deg);
+}
+
+/* ============================================================
+   Warum
+   ============================================================ */
+
+.reason h3 { font-size: var(--t-body); font-weight: 600; letter-spacing: -0.4px; margin-bottom: var(--sp-3); }
+.reason p { font-size: var(--t-body-sm); color: var(--c-ink-3); }
+.reason__rule { height: 1px; background: var(--c-hairline); margin-bottom: var(--sp-6); }
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+
+.faq { max-width: 820px; margin-inline: auto; }
+.faq__item { border-bottom: 1px solid var(--c-hairline); }
+.faq__item:first-child { border-top: 1px solid var(--c-hairline); }
+
+.faq__q {
+  list-style: none;
+  cursor: pointer;
+  padding-block: var(--sp-6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  font-family: var(--font-display);
+  font-size: var(--t-body);
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::after {
+  content: "";
+  flex: none;
+  width: 13px; height: 13px;
+  margin-top: 8px;
+  border-right: 1.6px solid var(--c-ink-3);
+  border-bottom: 1.6px solid var(--c-ink-3);
+  transform: rotate(45deg);
+  transition: transform var(--dur) var(--ease);
+}
+.faq__item[open] .faq__q::after { transform: rotate(-135deg); }
+.faq__a { padding-bottom: var(--sp-7); }
+.faq__a p { font-size: var(--t-body-sm); color: var(--c-ink-3); max-width: 66ch; }
+
+/* ============================================================
+   Kontakt
+   ============================================================ */
+
+.contact { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 76px); align-items: start; }
+@media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
+
+.contact__form { display: grid; gap: var(--sp-5); }
+.field { display: grid; gap: var(--sp-2); }
+.field label { font-size: var(--t-caption); color: var(--c-ink-3); }
+
+.field input,
+.field textarea {
+  font-family: var(--font-text);
+  font-size: var(--t-body-sm);
+  letter-spacing: -0.374px;
+  color: var(--c-ink);
+  background: var(--s-0);
+  border: 1px solid var(--c-hairline);
+  border-radius: 14px;
+  padding: 13px var(--sp-4);
+  width: 100%;
+  transition: border-color var(--dur) var(--ease);
+}
+.section--canvas .field input,
+.section--canvas .field textarea { background: var(--s-0); }
+.field textarea { min-height: 148px; resize: vertical; }
+.field input:focus,
+.field textarea:focus { outline: none; border-color: var(--c-accent); }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+@media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+
+.form__status {
+  font-size: var(--t-caption);
+  color: var(--c-ink);
+  background: var(--s-2);
+  border-radius: var(--r-link);
+  padding: var(--sp-3) var(--sp-4);
+}
+.form__note { font-size: var(--t-micro); color: var(--c-ink-4); line-height: 1.33; }
+
+.contact__aside { display: grid; gap: var(--sp-7); }
+.contact__block h3 { font-size: var(--t-caption); font-weight: 600; color: var(--c-ink-3); margin-bottom: var(--sp-2); }
+.contact__block p { font-size: var(--t-body-sm); }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.footer { background: var(--s-1); padding-block: var(--sp-13) var(--sp-10); }
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: var(--sp-10);
+}
+@media (max-width: 860px) { .footer__grid { grid-template-columns: 1fr 1fr; gap: var(--sp-8); } }
+@media (max-width: 520px) { .footer__grid { grid-template-columns: 1fr; } }
+
+.footer h4 {
+  font-family: var(--font-text);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  color: var(--c-ink);
+  margin-bottom: var(--sp-3);
+}
+.footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.footer a, .footer p, .footer li {
+  font-size: var(--t-micro);
+  line-height: 1.33;
+  letter-spacing: -0.12px;
+  color: var(--c-ink-3);
+}
+.footer a { color: var(--c-ink-3); }
+.footer a:hover { color: var(--c-link); }
+
+.footer__legal {
+  margin-top: var(--sp-10);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--c-hairline);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-6);
+  justify-content: space-between;
+}
+.footer__legal a { color: var(--c-link); }
+
+/* ============================================================
+   Einblenden
+   ============================================================ */
+
+/* Der Startzustand wird erst gesetzt, wenn JavaScript ihn auch wieder auflösen
+   kann. Ohne Skript bleibt die Seite sichtbar, statt leer zu sein. */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+[data-reveal][data-delay="1"] { transition-delay: 0.07s; }
+[data-reveal][data-delay="2"] { transition-delay: 0.14s; }
+[data-reveal][data-delay="3"] { transition-delay: 0.21s; }
+
+/* Das Formular ist ein Grid — hier zählt justify-self, nicht align-self. */
+.form__submit { justify-self: start; }
+
+
+/* Einzeldatei-Fassung: die Rechtsseiten liegen als Ansichten in derselben Datei. */
+.view[hidden] { display: none !important; }
+</style>
+
+</head>
+<body>
+
+<div class="view" id="view-home">
+
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<!-- ========================= Navigation ========================= -->
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="nav__logo" href="#top">
+      <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Webgewerk
+    </a>
+
+    <button class="nav__burger" type="button" aria-expanded="false"
+            aria-controls="nav-menu" aria-label="Menü öffnen"><span></span></button>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Hauptnavigation">
+      <a class="nav__link" href="#leistungen">Leistungen</a>
+      <a class="nav__link" href="#vorgehen">Vorgehen</a>
+      <a class="nav__link" href="#arbeiten">Arbeiten</a>
+      <a class="nav__link" href="#preise">Preise</a>
+      <a class="nav__link" href="#faq">Fragen</a>
+      <a class="btn btn--filled nav__cta" href="#kontakt">Prozess prüfen lassen</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<a id="top"></a>
+
+<!-- ========================= Hero ========================= -->
+<section class="section hero">
+  <div class="wrap">
+    <p class="hero__eyebrow" data-reveal>KI-Agentur · Hamburg &amp; remote</p>
+    <h1 class="h-display" data-reveal data-delay="1">Die Software ist<br>nicht Ihr Problem.</h1>
+    <p class="hero__lead" data-reveal data-delay="2">
+      Werkzeuge gibt es genug. Die Frage ist, welcher Vorgang sich überhaupt lohnt —
+      und was davon im Betrieb hält.
+    </p>
+
+    <div class="btn-row btn-row--center" data-reveal data-delay="3">
+      <a class="btn btn--filled" href="#kontakt">Prozess prüfen lassen</a>
+      <a class="btn btn--ghost" href="#abraten">Wovon wir abraten</a>
+    </div>
+
+    <p class="hero__note num" data-reveal data-delay="3">Wir fangen beim Vorgang an, nicht bei der Technik. Audit ab 4.900 €.</p>
+
+    <figure class="hero__visual" data-reveal>
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDc2MCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iNzYwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlByb2R1a3RkYXJzdGVsbHVuZzogZWluIG1hdHRlcyBBbHVtaW5pdW1vYmpla3QgbWl0IGJsYXVlciBMaWNodGZ1Z2UiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJoQm9keSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZGZkZmUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjM0IiBzdG9wLWNvbG9yPSIjZWNlZWYxIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC42MiIgc3RvcC1jb2xvcj0iI2RmZTJlNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmMmYzZjUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImhFZGdlIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2M5Y2VkNiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuMTgiIHN0b3AtY29sb3I9IiNmNmY3ZjkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiNkY2RmZTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjg0IiBzdG9wLWNvbG9yPSIjZjZmN2Y5Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M5Y2VkNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iaFNlYW0iIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMDA3MWUzIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjIyIiBzdG9wLWNvbG9yPSIjMDA3MWUzIiBzdG9wLW9wYWNpdHk9IjAuOSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNSIgc3RvcC1jb2xvcj0iIzVhYWVmZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNzgiIHN0b3AtY29sb3I9IiMwMDcxZTMiIHN0b3Atb3BhY2l0eT0iMC45Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwNzFlMyIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJoR2xvdyIgY3g9IjAuNSIgY3k9IjAuNSIgcj0iMC41Ij4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMDA3MWUzIiBzdG9wLW9wYWNpdHk9IjAuMzAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDA3MWUzIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImhTaGVlbiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMC45NSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNDUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMC4xMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0iaENsaXAiPgogICAgICA8cmVjdCB4PSIyMzAiIHk9IjE5NiIgd2lkdGg9Ijc0MCIgaGVpZ2h0PSIzNjgiIHJ4PSI1MiIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9Ijc2MCIgZmlsbD0iI2ZmZmZmZiIvPgoKICA8IS0tIFJlZmxleGlvbiB1bnRlciBkZW0gT2JqZWt0LCBob2Noa2V5IHVuZCB3ZWljaCAtLT4KICA8ZWxsaXBzZSBjeD0iNjAwIiBjeT0iNjEyIiByeD0iMzMwIiByeT0iMjYiIGZpbGw9IiMxZDFkMWYiIG9wYWNpdHk9IjAuMDUiLz4KICA8ZWxsaXBzZSBjeD0iNjAwIiBjeT0iNjA2IiByeD0iMTk2IiByeT0iMTMiIGZpbGw9IiMxZDFkMWYiIG9wYWNpdHk9IjAuMDUiLz4KCiAgPCEtLSBLw7ZycGVyIC0tPgogIDxyZWN0IHg9IjIzMCIgeT0iMTk2IiB3aWR0aD0iNzQwIiBoZWlnaHQ9IjM2OCIgcng9IjUyIiBmaWxsPSJ1cmwoI2hCb2R5KSIvPgogIDxyZWN0IHg9IjIzMCIgeT0iMTk2IiB3aWR0aD0iNzQwIiBoZWlnaHQ9IjM2OCIgcng9IjUyIiBmaWxsPSJ1cmwoI2hFZGdlKSIgb3BhY2l0eT0iMC41Ii8+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI2hDbGlwKSI+CiAgICA8cmVjdCB4PSIyMzAiIHk9IjE5NiIgd2lkdGg9Ijc0MCIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjaFNoZWVuKSIgb3BhY2l0eT0iMC41NSIvPgogICAgPCEtLSBMaWNodGZ1Z2UgLS0+CiAgICA8cmVjdCB4PSIxNTAiIHk9IjM1NiIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMzAiIGZpbGw9InVybCgjaEdsb3cpIi8+CiAgICA8cmVjdCB4PSIyNjIiIHk9IjQxOCIgd2lkdGg9IjY3NiIgaGVpZ2h0PSIzLjUiIHJ4PSIxLjc1IiBmaWxsPSJ1cmwoI2hTZWFtKSIvPgogICAgPHJlY3QgeD0iMjYyIiB5PSI0MTgiIHdpZHRoPSI2NzYiIGhlaWdodD0iMS4yIiByeD0iMC42IiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjc1Ii8+CiAgICA8IS0tIGZlaW5lIEZyw6Rza2FudGUgLS0+CiAgICA8cmVjdCB4PSIyNjIiIHk9IjI1MiIgd2lkdGg9IjY3NiIgaGVpZ2h0PSIxIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjg1Ii8+CiAgICA8Y2lyY2xlIGN4PSI2MDAiIGN5PSIzMzAiIHI9IjI3IiBmaWxsPSJub25lIiBzdHJva2U9IiNjNGM5ZDEiIHN0cm9rZS13aWR0aD0iMS40Ii8+CiAgICA8Y2lyY2xlIGN4PSI2MDAiIGN5PSIzMzAiIHI9IjkiIGZpbGw9IiNkZmUzZTgiLz4KICA8L2c+CiAgPHJlY3QgeD0iMjMwLjYiIHk9IjE5Ni42IiB3aWR0aD0iNzM4LjgiIGhlaWdodD0iMzY2LjgiIHJ4PSI1MS40IiBmaWxsPSJub25lIgogICAgICAgIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjIiIG9wYWNpdHk9IjAuOSIvPgo8L3N2Zz4K" width="1200" height="760"
+           alt="Ein mattes Aluminiumobjekt mit einer schmalen blauen Lichtfuge, freigestellt auf Weiß.">
+    </figure>
+
+    <div class="stats">
+      <!-- PLATZHALTER: Diese drei Zahlen müssen die echten sein, bevor die Seite
+           öffentlich geht. Die Positionierung steht und fällt mit ihnen — erfundene
+           Zahlen wären hier schädlicher als gar keine. Siehe README. -->
+      <div class="stat" data-reveal>
+        <p class="stat__value num">112</p>
+        <p class="stat__label">Prozesse geprüft</p>
+      </div>
+      <div class="stat" data-reveal data-delay="1">
+        <p class="stat__value num">38</p>
+        <p class="stat__label">davon automatisiert</p>
+      </div>
+      <div class="stat" data-reveal data-delay="2">
+        <p class="stat__value num">74</p>
+        <p class="stat__label">davon abgeraten — mit Begründung</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Vertrauen ========================= -->
+<section class="section section--tight trust">
+  <div class="wrap" data-reveal>
+    <p>Prozesse geprüft für Teams aus Industrie, Handel, Kanzleien und SaaS.</p>
+    <div class="trust__row">
+      <span class="trust__item">Maschinenbau</span>
+      <span class="trust__item">Steuerberatung</span>
+      <span class="trust__item">Großhandel</span>
+      <span class="trust__item">SaaS</span>
+      <span class="trust__item">Logistik</span>
+      <span class="trust__item">Energie</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Leistungen ========================= -->
+<section class="section section--canvas" id="leistungen">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow">Leistungen</p>
+      <h2 class="h-section">Wir fangen nie bei der Technik an.</h2>
+      <p class="copy">
+        Sondern bei dem Vorgang, der Sie Zeit kostet. Was sich nicht rechnet, bauen wir
+        nicht — das ist keine Floskel, sondern der Grund, warum zwei von drei geprüften
+        Prozessen bei uns ohne Automatisierung herausgehen.
+      </p>
+    </div>
+
+    <div class="grid grid--4">
+      <article class="card" data-reveal>
+        <svg class="card__icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect x="4" y="7" width="20" height="15" rx="4.5" stroke="currentColor" stroke-width="1.7"/>
+          <circle cx="10.5" cy="14.5" r="1.6" fill="currentColor"/>
+          <circle cx="17.5" cy="14.5" r="1.6" fill="currentColor"/>
+          <path d="M14 7V3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+        <h3>Prozess-Audit</h3>
+        <p>Wir nehmen Ihre Abläufe auf und rechnen nach. Am Ende steht eine Liste: Das
+          lohnt sich, das nicht, und warum. Kein Anbieter, der Lizenzen verkauft, wird
+          Ihnen diese Liste schreiben.</p>
+        <a class="arrow-link" href="#abraten">Wovon wir abraten</a>
+      </article>
+
+      <article class="card" data-reveal data-delay="1">
+        <svg class="card__icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="3.2" stroke="currentColor" stroke-width="1.7"/>
+          <circle cx="21" cy="21" r="3.2" stroke="currentColor" stroke-width="1.7"/>
+          <path d="M7 10.4v5.4a2.8 2.8 0 0 0 2.8 2.8h5.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M21 17.8v-5.4a2.8 2.8 0 0 0-2.8-2.8h-5.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+        <h3>Umsetzung</h3>
+        <p>Agenten und Automatisierungen — aber erst nach dem Audit. Inklusive der letzten
+          zwanzig Prozent: Sonderfall, Ausnahme, der Beleg, der nicht ins Schema passt.
+          Genau daran sterben Automatisierungen.</p>
+        <a class="arrow-link" href="#vorgehen">So läuft das ab</a>
+      </article>
+
+      <article class="card" data-reveal data-delay="2">
+        <svg class="card__icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect x="3.5" y="5" width="21" height="18" rx="4.5" stroke="currentColor" stroke-width="1.7"/>
+          <path d="M3.5 10.5h21" stroke="currentColor" stroke-width="1.7"/>
+          <circle cx="7.6" cy="7.7" r="1.1" fill="currentColor"/>
+        </svg>
+        <h3>Integration in Bestandssysteme</h3>
+        <p>ERP, CRM, DMS, Postfach — auch dort, wo es keine saubere Schnittstelle gibt.
+          Wo kein API ist, hilft kein Werkzeug. Dann bauen wir den Weg, den Ihr System
+          zulässt. Ein Systemwechsel ist nie Voraussetzung.</p>
+        <a class="arrow-link" href="#arbeiten">Arbeiten ansehen</a>
+      </article>
+
+      <article class="card" data-reveal data-delay="3">
+        <svg class="card__icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M14 3.5 4.5 8.2 14 12.9l9.5-4.7L14 3.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M4.5 14.2 14 18.9l9.5-4.7M4.5 19.8 14 24.5l9.5-4.7" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        </svg>
+        <h3>Betrieb &amp; Verantwortung</h3>
+        <p>Überwachung, Auswertung, Nachschärfen — und Schulung, damit Ihr Team dem
+          Ergebnis traut und die Regeln selbst anpassen kann. Ein Werkzeug haftet nicht.
+          Wir stehen für das Ergebnis gerade.</p>
+        <a class="arrow-link" href="#preise">Preise ansehen</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Vorgehen ========================= -->
+<section class="section" id="vorgehen">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow">Vorgehen</p>
+      <h2 class="h-section">Vom ersten Gespräch zum laufenden Agenten in vier Schritten.</h2>
+    </div>
+
+    <div class="steps">
+      <article class="step" data-reveal>
+        <p class="step__num num">01</p>
+        <div class="step__rule"></div>
+        <h3>Audit</h3>
+        <p class="step__time">1 Woche</p>
+        <p>Wir nehmen Ihre Abläufe auf, beziffern die Potenziale und legen einen Fahrplan
+          vor. Häufigstes Ergebnis: Zwei von drei Vorgängen gehen ohne Automatisierung
+          heraus — manchmal reicht es, ein Formular zu ändern.</p>
+      </article>
+
+      <article class="step" data-reveal data-delay="1">
+        <p class="step__num num">02</p>
+        <div class="step__rule"></div>
+        <h3>Prototyp</h3>
+        <p class="step__time">2 Wochen</p>
+        <p>Ein echter Anwendungsfall, an Ihren echten Daten. Sie sehen früh, was der Agent kann
+          und wo er nachfragen muss.</p>
+      </article>
+
+      <article class="step" data-reveal data-delay="2">
+        <p class="step__num num">03</p>
+        <div class="step__rule"></div>
+        <h3>Livegang</h3>
+        <p class="step__time">4 Wochen</p>
+        <p>Integration in Ihre Systeme, Freigabewege, Schulung, Übergabe. Mit Dokumentation,
+          die Ihr Team auch ohne uns versteht.</p>
+      </article>
+
+      <article class="step" data-reveal data-delay="3">
+        <p class="step__num num">04</p>
+        <div class="step__rule"></div>
+        <h3>Betrieb</h3>
+        <p class="step__time">laufend</p>
+        <p>Überwachung, monatliche Auswertung, Weiterentwicklung. Wir sehen, wenn ein Agent
+          schlechter wird — bevor Sie es merken.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Arbeiten ========================= -->
+<section class="section section--canvas" id="arbeiten">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow">Arbeiten</p>
+      <h2 class="h-section">Drei Vorgänge, die heute von allein laufen.</h2>
+    </div>
+
+    <article class="case" data-reveal>
+      <figure class="case__media">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJQcm9kdWt0ZGFyc3RlbGx1bmcgYXVmIGhlbGxibGF1ZXIgRmzDpGNoZTogZ2VzdGFwZWx0ZSBNb2R1bGUiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjZWVmMWY0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2UwZTVlYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYjIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjY2RkNGRjIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC4zIiBzdG9wLWNvbG9yPSIjZjhmYWZiIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC43IiBzdG9wLWNvbG9yPSIjZTNlOGVkIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2NkZDRkYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNjOGQ4ZTAiLz4KICA8ZWxsaXBzZSBjeD0iNDAwIiBjeT0iNDcwIiByeD0iMjEyIiByeT0iMTgiIGZpbGw9IiMxZDFkMWYiIG9wYWNpdHk9IjAuMDYiLz4KCiAgPCEtLSBkcmVpIHZlcnNldHp0ZSBCZWxlZ2ViZW5lbiAtLT4KICA8Zz4KICAgIDxyZWN0IHg9IjI1MiIgeT0iMzAwIiB3aWR0aD0iMjk2IiBoZWlnaHQ9IjE1MCIgcng9IjI2IiBmaWxsPSJ1cmwoI2IyKSIgb3BhY2l0eT0iMC44NSIvPgogICAgPHJlY3QgeD0iMjM2IiB5PSIyMzgiIHdpZHRoPSIzMjgiIGhlaWdodD0iMTUwIiByeD0iMjgiIGZpbGw9InVybCgjYjEpIi8+CiAgICA8cmVjdCB4PSIyMzYuNSIgeT0iMjM4LjUiIHdpZHRoPSIzMjciIGhlaWdodD0iMTQ5IiByeD0iMjcuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogICAgPHJlY3QgeD0iMjIwIiB5PSIxNzAiIHdpZHRoPSIzNjAiIGhlaWdodD0iMTUyIiByeD0iMzAiIGZpbGw9InVybCgjYjEpIi8+CiAgICA8cmVjdCB4PSIyMjAuNSIgeT0iMTcwLjUiIHdpZHRoPSIzNTkiIGhlaWdodD0iMTUxIiByeD0iMjkuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEuMyIvPgogICAgPCEtLSBJbmhhbHRzbGluaWVuLCBtb25vY2hyb20gLS0+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjIxMiIgd2lkdGg9IjE3NiIgaGVpZ2h0PSI3IiByeD0iMy41IiBmaWxsPSIjYzRjYmQzIi8+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjIzNCIgd2lkdGg9IjI0OCIgaGVpZ2h0PSI3IiByeD0iMy41IiBmaWxsPSIjZDZkYmUxIi8+CiAgICA8cmVjdCB4PSIyNTYiIHk9IjI1NiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI3IiByeD0iMy41IiBmaWxsPSIjZDZkYmUxIi8+CiAgICA8Y2lyY2xlIGN4PSI1MjkiIGN5PSIyMzQiIHI9IjE2IiBmaWxsPSIjMDA3MWUzIi8+CiAgICA8cGF0aCBkPSJNNTIxIDIzNCBsNiA2IGwxMSAtMTMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjYiCiAgICAgICAgICBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=" width="800" height="600"
+             alt="Gestapelte Belegebenen als Produktdarstellung auf hellblauer Fläche.">
+      </figure>
+      <div class="case__body">
+        <p class="case__kicker">Steuerkanzlei · 40 Mitarbeitende</p>
+        <h3>Die Belegstraße, die nur noch bei Zweifeln fragt.</h3>
+        <p>12.000 Belege im Monat werden automatisch erkannt, zugeordnet und vorkontiert.
+          Der Agent legt selbst fest, wann er sich unsicher ist — nur diese Fälle landen
+          noch auf einem Schreibtisch.</p>
+        <div class="case__metrics num">
+          <div>
+            <p class="case__metric-value">71 %</p>
+            <p class="case__metric-label">weniger Handgriffe</p>
+          </div>
+          <div>
+            <p class="case__metric-value">9 Tage</p>
+            <p class="case__metric-label">kürzerer Monatsabschluss</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="case case--flip" data-reveal>
+      <figure class="case__media">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJQcm9kdWt0ZGFyc3RlbGx1bmcgYXVmIGdlbGJncsO8bmVyIEZsw6RjaGU6IHp3ZWkgc2Nod2ViZW5kZSBNZXRhbGxwbGF0dGVuIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYTEiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmRmZGZkIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjZTllYmU2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2RjZGZkOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYTIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjYzljY2M0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC4yNSIgc3RvcC1jb2xvcj0iI2Y3ZjhmNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNjIiIHN0b3AtY29sb3I9IiNlMmU1ZGUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYzljY2M0Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhU2VhbSIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjAiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMDcxZTMiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuNSIgc3RvcC1jb2xvcj0iIzAwNzFlMyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMDcxZTMiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjgwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiNkZGRjOGMiLz4KICA8ZWxsaXBzZSBjeD0iNDAwIiBjeT0iNDc0IiByeD0iMTk2IiByeT0iMTciIGZpbGw9IiMxZDFkMWYiIG9wYWNpdHk9IjAuMDciLz4KCiAgPCEtLSB1bnRlcmUgUGxhdHRlIC0tPgogIDxyZWN0IHg9IjIzMCIgeT0iMzMwIiB3aWR0aD0iMzQwIiBoZWlnaHQ9IjEwNCIgcng9IjM0IiBmaWxsPSJ1cmwoI2ExKSIvPgogIDxyZWN0IHg9IjIzMCIgeT0iMzMwIiB3aWR0aD0iMzQwIiBoZWlnaHQ9IjEwNCIgcng9IjM0IiBmaWxsPSJ1cmwoI2EyKSIgb3BhY2l0eT0iMC40NSIvPgogIDxyZWN0IHg9IjIzMC42IiB5PSIzMzAuNiIgd2lkdGg9IjMzOC44IiBoZWlnaHQ9IjEwMi44IiByeD0iMzMuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEuMiIvPgoKICA8IS0tIEZ1Z2Ugendpc2NoZW4gZGVuIFBsYXR0ZW4gLS0+CiAgPHJlY3QgeD0iMjY2IiB5PSIzMTIiIHdpZHRoPSIyNjgiIGhlaWdodD0iMyIgcng9IjEuNSIgZmlsbD0idXJsKCNhU2VhbSkiLz4KCiAgPCEtLSBvYmVyZSBQbGF0dGUsIGxlaWNodCB2ZXJzZXR6dCAtLT4KICA8cmVjdCB4PSIyNDgiIHk9IjE5NiIgd2lkdGg9IjM0MCIgaGVpZ2h0PSIxMDQiIHJ4PSIzNCIgZmlsbD0idXJsKCNhMSkiLz4KICA8cmVjdCB4PSIyNDgiIHk9IjE5NiIgd2lkdGg9IjM0MCIgaGVpZ2h0PSIxMDQiIHJ4PSIzNCIgZmlsbD0idXJsKCNhMikiIG9wYWNpdHk9IjAuNDUiLz4KICA8cmVjdCB4PSIyNDguNiIgeT0iMTk2LjYiIHdpZHRoPSIzMzguOCIgaGVpZ2h0PSIxMDIuOCIgcng9IjMzLjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8cmVjdCB4PSIyODQiIHk9IjIyMiIgd2lkdGg9IjExOCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2M4Y2NjMyIvPgogIDxyZWN0IHg9IjI4NCIgeT0iMjQyIiB3aWR0aD0iMTk2IiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZDhkYmQyIi8+CiAgPGNpcmNsZSBjeD0iNTQyIiBjeT0iMjQ4IiByPSI3IiBmaWxsPSIjMDA3MWUzIi8+Cjwvc3ZnPgo=" width="800" height="600"
+             alt="Zwei schwebende Metallplatten als Produktdarstellung auf gelbgrüner Fläche.">
+      </figure>
+      <div class="case__body">
+        <p class="case__kicker">Maschinenbau · Sondermaschinen</p>
+        <h3>Anfrage rein, kalkuliertes Angebot raus.</h3>
+        <p>Der Agent liest die Anfrage, zieht Stücklisten und Preise aus dem ERP und legt ein
+          fertiges Angebot zur Freigabe vor. Der Vertrieb prüft und schickt — statt zu tippen.</p>
+        <div class="case__metrics num">
+          <div>
+            <p class="case__metric-value">2 Std.</p>
+            <p class="case__metric-label">statt 3 Tagen bis zum Angebot</p>
+          </div>
+          <div>
+            <p class="case__metric-value">2,4×</p>
+            <p class="case__metric-label">mehr Anfragen bearbeitet</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="case" data-reveal>
+      <figure class="case__media">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJQcm9kdWt0ZGFyc3RlbGx1bmcgYXVmIGNyZW1lZmFyYmVuZXIgRmzDpGNoZTogTW9ub2xpdGggbWl0IHJ1bmRlciBWZXJ0aWVmdW5nIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iczEiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmVmZGZiIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC40OCIgc3RvcC1jb2xvcj0iI2VlZWFlNCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlMmRkZDUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InMyIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2NkYzdiZCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjAuMjgiIHN0b3AtY29sb3I9IiNmYWY4ZjUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjY4IiBzdG9wLWNvbG9yPSIjZTZlMWRhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2NkYzdiZCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0ic0Rpc2giIGN4PSIwLjUiIGN5PSIwLjM2IiByPSIwLjY4Ij4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZDlkM2NhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC43MiIgc3RvcC1jb2xvcj0iI2VmZWJlNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmYmY5ZjYiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZjBlNGQzIi8+CiAgPGVsbGlwc2UgY3g9IjQwMCIgY3k9IjQ3MCIgcng9IjE4MCIgcnk9IjE2IiBmaWxsPSIjMWQxZDFmIiBvcGFjaXR5PSIwLjA3Ii8+CgogIDxyZWN0IHg9IjI1NiIgeT0iMTUyIiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjMwNCIgcng9IjU2IiBmaWxsPSJ1cmwoI3MxKSIvPgogIDxyZWN0IHg9IjI1NiIgeT0iMTUyIiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjMwNCIgcng9IjU2IiBmaWxsPSJ1cmwoI3MyKSIgb3BhY2l0eT0iMC40MiIvPgogIDxyZWN0IHg9IjI1Ni42IiB5PSIxNTIuNiIgd2lkdGg9IjI4Ni44IiBoZWlnaHQ9IjMwMi44IiByeD0iNTUuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEuMyIvPgoKICA8Y2lyY2xlIGN4PSI0MDAiIGN5PSIyNjgiIHI9IjY2IiBmaWxsPSJ1cmwoI3NEaXNoKSIvPgogIDxjaXJjbGUgY3g9IjQwMCIgY3k9IjI2OCIgcj0iNjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q1Y2ZjNiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz4KICA8Y2lyY2xlIGN4PSI0MDAiIGN5PSIyNjgiIHI9IjIxIiBmaWxsPSIjMDA3MWUzIi8+CiAgPGNpcmNsZSBjeD0iNDAwIiBjeT0iMjY4IiByPSIyMSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEuMiIgb3BhY2l0eT0iMC41Ii8+CgogIDxyZWN0IHg9IjMzMCIgeT0iMzc2IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjYiIHJ4PSIzIiBmaWxsPSIjZDNjY2MyIi8+CiAgPHJlY3QgeD0iMzYwIiB5PSIzOTgiIHdpZHRoPSI4MCIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2UwZGFkMSIvPgo8L3N2Zz4K" width="800" height="600"
+             alt="Monolithischer Block mit runder Vertiefung als Produktdarstellung auf cremefarbener Fläche.">
+      </figure>
+      <div class="case__body">
+        <p class="case__kicker">SaaS · B2B-Support</p>
+        <h3>Ein Copilot, der aus der eigenen Wissensbasis antwortet.</h3>
+        <p>Antwortentwürfe kommen aus der eigenen Dokumentation, mit Quellenangabe. Freigabe
+          bleibt beim Menschen — die Kundin merkt nur, dass es schneller geht.</p>
+        <div class="case__metrics num">
+          <div>
+            <p class="case__metric-value">+18</p>
+            <p class="case__metric-label">Punkte CSAT</p>
+          </div>
+          <div>
+            <p class="case__metric-value">4 Min.</p>
+            <p class="case__metric-label">durchschnittliche Erstantwort</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ========================= Wovon wir abraten ========================= -->
+<section class="section" id="abraten">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow">Wovon wir abraten</p>
+      <h2 class="h-section">Dreimal haben wir abgeraten. Hier ist, warum.</h2>
+      <p class="copy">
+        Automatisierung ist kein Selbstzweck. Diese drei Vorgänge hätten wir bauen
+        können — es hätte sich nicht gerechnet. Zwei davon hatten schon ein Budget.
+      </p>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="card" data-reveal>
+        <p class="price__label">Großhandel</p>
+        <h3>Angebotsfreigabe</h3>
+        <p>Vier Freigabestufen, zwölf Sonderfälle, dreißig Vorgänge im Monat. Die
+          Ausnahmen zu pflegen hätte mehr Zeit gekostet als die Handarbeit selbst.
+          Stattdessen haben wir zwei Formularfelder geändert und die vierte Freigabe
+          gestrichen. Ergebnis: knapp die Hälfte der Bearbeitungszeit weg, ohne KI.</p>
+      </article>
+
+      <article class="card" data-reveal data-delay="1">
+        <p class="price__label">Industrie · Personal</p>
+        <h3>Bewerbungsvorauswahl</h3>
+        <p>Technisch die einfachste Anfrage des Jahres. Rechtlich und menschlich nicht:
+          Wer aussortiert wird, hat Anspruch auf eine nachvollziehbare Begründung, und
+          ein Modell liefert die nicht belastbar. Abgeraten — dieses Risiko wiegt kein
+          Effizienzgewinn auf.</p>
+      </article>
+
+      <article class="card" data-reveal data-delay="2">
+        <p class="price__label">Eigenes Projekt, zurückgebaut</p>
+        <h3>Protokolle aus Kundenterminen</h3>
+        <p>Der Agent lief technisch gut. Nach acht Wochen benutzte ihn niemand mehr:
+          Die Nacharbeit an den Entwürfen dauerte länger als selbst mitzuschreiben. Wir
+          haben ihn abgeschaltet und das Honorar für den Betrieb zurückgegeben. Gelernt:
+          Zeitersparnis auf dem Papier ist keine im Kalender.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Warum ========================= -->
+<section class="section section--canvas">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow">Warum Webgewerk</p>
+      <h2 class="h-section">Werkzeuge kann jeder kaufen.</h2>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="reason" data-reveal>
+        <div class="reason__rule"></div>
+        <h3>Wir sagen ab, wenn es sich nicht rechnet</h3>
+        <p>Das kostet uns Aufträge und ist der Grund, warum unsere Empfehlung etwas wert
+          ist. Wer an jeder Lizenz mitverdient, kann Ihnen diese Auskunft nicht geben.</p>
+      </article>
+
+      <article class="reason" data-reveal data-delay="1">
+        <div class="reason__rule"></div>
+        <h3>Verantwortung statt Lizenz</h3>
+        <p>Ein Werkzeug haftet nicht, wenn der Agent falsch liegt. Wir schon: mit
+          Freigabewegen, lückenlosem Protokoll und einer Person, die drangeht. Hosting
+          in der EU, AV-Vertrag inklusive.</p>
+      </article>
+
+      <article class="reason" data-reveal data-delay="2">
+        <div class="reason__rule"></div>
+        <h3>Ein Team, kein Weiterreichen</h3>
+        <p>Die Leute, die beraten, bauen auch — und betreiben. Wer im Audit Nein sagt,
+          muss ein halbes Jahr später mit dem Ergebnis leben. Das diszipliniert.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Preise ========================= -->
+<section class="section" id="preise">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow">Einstiege</p>
+      <h2 class="h-section">Klare Preise. Keine Tagessatz-Überraschungen.</h2>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="card price" data-reveal>
+        <p class="price__label"><span class="badge">Hier anfangen</span></p>
+        <h3>Prozess-Audit</h3>
+        <p class="price__value num">ab 4.900 €</p>
+        <ul class="price__list">
+          <li>1 Woche, fester Preis</li>
+          <li>Aufnahme Ihrer Abläufe</li>
+          <li>Liste: lohnt sich / lohnt sich nicht</li>
+          <li>Fahrplan mit Rechnung, auch für das Nein</li>
+        </ul>
+        <a class="btn btn--filled" href="#kontakt" style="margin-top:var(--sp-6);align-self:flex-start;">Audit anfragen</a>
+      </article>
+
+      <article class="card price" data-reveal data-delay="1">
+        <p class="price__label">Wenn es sich rechnet</p>
+        <h3>Umsetzung</h3>
+        <p class="price__value num">ab 18.000 €</p>
+        <ul class="price__list">
+          <li>4–8 Wochen bis zum Livegang</li>
+          <li>Prototyp an Ihren echten Daten</li>
+          <li>Integration und Freigabewege</li>
+          <li>Schulung und Übergabe</li>
+        </ul>
+        <a class="arrow-link" href="#vorgehen">So läuft das ab</a>
+      </article>
+
+      <article class="card price" data-reveal data-delay="2">
+        <p class="price__label">Danach</p>
+        <h3>Betrieb &amp; Ausbau</h3>
+        <p class="price__value num">ab 1.900 € / Monat</p>
+        <ul class="price__list">
+          <li>Überwachung und Alarmierung</li>
+          <li>Monatliche Auswertung</li>
+          <li>Reaktionszeit nach Vereinbarung</li>
+          <li>Weiterentwicklung im festen Kontingent</li>
+        </ul>
+        <a class="arrow-link" href="#kontakt">Betrieb besprechen</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= FAQ ========================= -->
+<section class="section section--canvas" id="faq">
+  <div class="wrap">
+    <div class="section__head section__head--center" data-reveal>
+      <p class="eyebrow">Häufige Fragen</p>
+      <h2 class="h-section">Was Kundinnen und Kunden zuerst fragen.</h2>
+    </div>
+
+    <div class="faq" data-reveal>
+      <details class="faq__item">
+        <summary class="faq__q">Warum kaufen wir nicht einfach ein Tool?</summary>
+        <div class="faq__a"><p>Weil das Werkzeug der einfachste Teil ist. Eine Lizenz kostet
+          ein paar hundert Euro im Monat und ist in einer Woche eingerichtet. Danach fängt
+          die Arbeit an: Welcher Vorgang lohnt sich überhaupt, was passiert mit den
+          Ausnahmen, wie kommt das Werkzeug an Ihr Altsystem, benutzt es hinterher jemand,
+          und wer haftet, wenn es falsch liegt. Wenn Sie das im Haus haben, brauchen Sie
+          uns nicht — dann sagen wir Ihnen das auch.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary class="faq__q">Bleiben unsere Daten in Europa?</summary>
+        <div class="faq__a"><p>Ja. Wir hosten in der EU und wählen Modelle, die sich in der EU
+          betreiben oder über europäische Anbieter ansprechen lassen. Wo ein Anbieter außerhalb
+          der EU unvermeidbar ist, sagen wir das vorher und legen die Rechtsgrundlage offen —
+          Sie entscheiden dann, nicht wir.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary class="faq__q">Was passiert, wenn der Agent falsch liegt?</summary>
+        <div class="faq__a"><p>Dafür bauen wir zwei Dinge ein: eine Unsicherheitsschwelle, ab der
+          der Agent nicht selbst entscheidet, sondern vorlegt — und ein Protokoll, in dem jeder
+          Schritt nachvollziehbar bleibt. Kritische Vorgänge bekommen grundsätzlich eine
+          menschliche Freigabe.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary class="faq__q">Brauchen wir eigene KI-Leute im Haus?</summary>
+        <div class="faq__a"><p>Nein. Für den Betrieb reicht eine Person, die den Fachprozess kennt.
+          Wir schulen sie und übergeben eine Dokumentation, mit der sie Regeln selbst anpassen
+          kann. Alles Technische können Sie bei uns lassen — müssen Sie aber nicht.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary class="faq__q">Wie schnell sehen wir Ergebnisse?</summary>
+        <div class="faq__a"><p>Nach dem Audit wissen Sie in einer Woche, was sich rechnet. Der
+          erste Prototyp läuft nach zwei weiteren Wochen an Ihren Daten. Bis ein Agent
+          produktiv arbeitet, vergehen in der Regel vier bis acht Wochen.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary class="faq__q">Arbeitet ihr mit unseren Bestandssystemen?</summary>
+        <div class="faq__a"><p>Genau darin liegt die Arbeit. Wir docken an ERP, CRM, DMS und
+          Postfächer an — per Schnittstelle, wo es eine gibt, sonst über den Weg, den Ihr
+          System zulässt. Ein Systemwechsel ist nie Voraussetzung für ein Projekt.</p></div>
+      </details>
+
+      <details class="faq__item">
+        <summary class="faq__q">Was kostet der Betrieb wirklich?</summary>
+        <div class="faq__a"><p>Zwei Posten: unsere Betreuung ab 1.900 € im Monat und die
+          Modellkosten, die nach Nutzung abgerechnet werden. Letztere schätzen wir im Audit
+          anhand Ihrer Mengen ab — bei den meisten Projekten liegen sie im niedrigen dreistelligen
+          Bereich pro Monat.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= Kontakt ========================= -->
+<section class="section" id="kontakt">
+  <div class="wrap">
+    <div class="contact">
+      <div data-reveal>
+        <p class="eyebrow">Kontakt</p>
+        <h2 class="h-section">Nennen Sie uns einen Vorgang. Wir sagen Ihnen, ob er sich lohnt.</h2>
+        <p class="copy" style="margin-top:var(--sp-6);">
+          Ein Absatz reicht. Wir melden uns innerhalb eines Werktags — und wenn die Antwort
+          „lohnt sich nicht" lautet, bekommen Sie sie kostenlos und mit Begründung.
+        </p>
+
+        <div class="contact__aside" style="margin-top:var(--sp-10);">
+          <div class="contact__block">
+            <h3>E-Mail</h3>
+            <p><a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a></p>
+          </div>
+          <div class="contact__block">
+            <h3>Telefon</h3>
+            <p class="num">0xxxx xxxxxx</p>
+          </div>
+          <div class="contact__block">
+            <h3>Adresse</h3>
+            <p>Webgewerk (Prototyp, nie gegründet)<br>Ahornweg 8<br>50000 Neuenfeld</p>
+          </div>
+        </div>
+      </div>
+
+      <form class="contact__form" data-reveal data-delay="1" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="f-firma">Firma</label>
+            <input id="f-firma" name="firma" type="text" autocomplete="organization">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-mail">E-Mail</label>
+          <input id="f-mail" name="email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="f-text">Welcher Vorgang kostet Sie Zeit?</label>
+          <textarea id="f-text" name="anliegen" required
+            placeholder="Zum Beispiel: Jede Anfrage wird bei uns von Hand ins CRM übertragen — etwa 60 am Tag."></textarea>
+        </div>
+
+        <p class="form__status" hidden role="status"></p>
+
+        <button class="btn btn--filled form__submit" type="submit">Anfrage senden</button>
+
+        <p class="form__note">
+          Mit dem Absenden stimmen Sie zu, dass wir Ihre Angaben zur Bearbeitung der Anfrage
+          verwenden. Details in der <a href="#datenschutz" data-page="datenschutz">Datenschutzerklärung</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ========================= Footer ========================= -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="nav__logo" href="#top" style="margin-bottom:var(--sp-3);">
+          <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Webgewerk
+        </a>
+        <p>KI-Agentur aus Hamburg. Wir planen, bauen und betreiben Agenten und
+          Automatisierungen für Unternehmen im deutschsprachigen Raum.</p>
+      </div>
+
+      <div>
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#leistungen">KI-Agenten</a></li>
+          <li><a href="#leistungen">Prozess-Automatisierung</a></li>
+          <li><a href="#leistungen">Web &amp; Produkt</a></li>
+          <li><a href="#leistungen">Beratung &amp; Enablement</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Agentur</h4>
+        <ul>
+          <li><a href="#vorgehen">Vorgehen</a></li>
+          <li><a href="#arbeiten">Arbeiten</a></li>
+          <li><a href="#preise">Preise</a></li>
+          <li><a href="#faq">Fragen</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a></li>
+          <li class="num">0xxxx xxxxxx</li>
+          <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal">
+      <p>Copyright © <span data-year>2026</span> Webgewerk (Prototyp, nie gegründet). Alle Rechte vorbehalten.</p>
+      <p>
+        <a href="#impressum" data-page="impressum">Impressum</a> ·
+        <a href="#datenschutz" data-page="datenschutz">Datenschutz</a> ·
+        <a href="#agb" data-page="agb">AGB</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+</div>
+<div class="view" id="view-impressum" hidden><header class="nav is-scrolled">
+  <div class="wrap nav__inner">
+    <a class="nav__logo" href="#top">
+      <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Webgewerk
+    </a>
+
+    <button class="nav__burger" type="button" aria-expanded="false"
+            aria-controls="nav-menu" aria-label="Menü öffnen"><span></span></button>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Hauptnavigation">
+      <a class="nav__link" href="#leistungen">Leistungen</a>
+      <a class="nav__link" href="#vorgehen">Vorgehen</a>
+      <a class="nav__link" href="#arbeiten">Arbeiten</a>
+      <a class="nav__link" href="#preise">Preise</a>
+      <a class="nav__link" href="#faq">Fragen</a>
+      <a class="btn btn--filled nav__cta" href="#kontakt">Prozess prüfen lassen</a>
+    </nav>
+  </div>
+</header><main id="main" class="section">
+  <div class="wrap" style="max-width:760px;">
+    <p class="eyebrow">Rechtliches</p>
+    <h1 class="h-section">Impressum</h1>
+
+    <div style="margin-top:var(--sp-10);display:grid;gap:var(--sp-8);">
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">Angaben gemäß § 5 DDG</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Webgewerk (Prototyp, nie gegründet)<br>
+          Ahornweg 8<br>
+          50000 Neuenfeld<br>
+          Deutschland
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">Vertreten durch</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">[Name der Geschäftsführung ergänzen]</p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">Kontakt</h2>
+        <p class="copy num" style="margin-top:var(--sp-3);">
+          Telefon: 0xxxx xxxxxx<br>
+          E-Mail: <a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a>
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">Registereintrag</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Registergericht: Amtsgericht Hamburg<br>
+          Registernummer: HRB [ergänzen]<br>
+          Umsatzsteuer-Identifikationsnummer nach § 27 a UStG: DE [ergänzen]
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">Verantwortlich für den Inhalt</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          [Name und Anschrift ergänzen]
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">Streitbeilegung</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer
+          Verbraucherschlichtungsstelle teilzunehmen.
+        </p>
+      </section>
+
+      <p class="form__note" style="margin-top:var(--sp-4);">
+        Hinweis: Diese Seite enthält Platzhalter. Vor dem Livegang müssen die mit
+        [ ] markierten Angaben durch die echten Firmendaten ersetzt und der Text
+        rechtlich geprüft werden.
+      </p>
+    </div>
+
+    <p style="margin-top:var(--sp-12);"><a class="arrow-link" href="#top" data-page="home">Zurück zur Startseite</a></p>
+  </div>
+</main><footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="nav__logo" href="#top" style="margin-bottom:var(--sp-3);">
+          <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Webgewerk
+        </a>
+        <p>KI-Agentur aus Hamburg. Wir planen, bauen und betreiben Agenten und
+          Automatisierungen für Unternehmen im deutschsprachigen Raum.</p>
+      </div>
+
+      <div>
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#leistungen">KI-Agenten</a></li>
+          <li><a href="#leistungen">Prozess-Automatisierung</a></li>
+          <li><a href="#leistungen">Web &amp; Produkt</a></li>
+          <li><a href="#leistungen">Beratung &amp; Enablement</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Agentur</h4>
+        <ul>
+          <li><a href="#vorgehen">Vorgehen</a></li>
+          <li><a href="#arbeiten">Arbeiten</a></li>
+          <li><a href="#preise">Preise</a></li>
+          <li><a href="#faq">Fragen</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a></li>
+          <li class="num">0xxxx xxxxxx</li>
+          <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal">
+      <p>Copyright © <span data-year>2026</span> Webgewerk (Prototyp, nie gegründet). Alle Rechte vorbehalten.</p>
+      <p>
+        <a href="#impressum" data-page="impressum">Impressum</a> ·
+        <a href="#datenschutz" data-page="datenschutz">Datenschutz</a> ·
+        <a href="#agb" data-page="agb">AGB</a>
+      </p>
+    </div>
+  </div>
+</footer></div>
+<div class="view" id="view-datenschutz" hidden><header class="nav is-scrolled">
+  <div class="wrap nav__inner">
+    <a class="nav__logo" href="#top">
+      <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Webgewerk
+    </a>
+
+    <button class="nav__burger" type="button" aria-expanded="false"
+            aria-controls="nav-menu" aria-label="Menü öffnen"><span></span></button>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Hauptnavigation">
+      <a class="nav__link" href="#leistungen">Leistungen</a>
+      <a class="nav__link" href="#vorgehen">Vorgehen</a>
+      <a class="nav__link" href="#arbeiten">Arbeiten</a>
+      <a class="nav__link" href="#preise">Preise</a>
+      <a class="nav__link" href="#faq">Fragen</a>
+      <a class="btn btn--filled nav__cta" href="#kontakt">Prozess prüfen lassen</a>
+    </nav>
+  </div>
+</header><main id="main" class="section">
+  <div class="wrap" style="max-width:760px;">
+    <p class="eyebrow">Rechtliches</p>
+    <h1 class="h-section">Datenschutzerklärung</h1>
+
+    <div style="margin-top:var(--sp-10);display:grid;gap:var(--sp-8);">
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">1. Verantwortliche Stelle</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Webgewerk (Prototyp, nie gegründet), Ahornweg 8, 50000 Neuenfeld,
+          <a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a>.
+          Eine Datenschutzbeauftragte ist [benannt / nicht benannt — bitte ergänzen].
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">2. Aufruf dieser Website</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Beim Aufruf werden vom Server technisch notwendige Daten verarbeitet: IP-Adresse,
+          Zeitpunkt, aufgerufene Seite, übertragene Datenmenge, Browsertyp und Betriebssystem.
+          Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO — unser berechtigtes Interesse am
+          sicheren Betrieb. Die Logs werden nach [Frist ergänzen] gelöscht.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">3. Kontaktformular</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Das Formular auf dieser Seite sendet keine Daten an unseren Server. Es öffnet Ihr
+          E-Mail-Programm mit einer vorbereiteten Nachricht — abgeschickt wird sie erst durch
+          Sie. Ihre Angaben verarbeiten wir dann zur Bearbeitung der Anfrage nach
+          Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO und löschen sie, sobald sie nicht mehr
+          erforderlich sind und keine Aufbewahrungspflicht entgegensteht.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">4. Schriftarten</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Diese Seite lädt keine Schriftarten von fremden Servern. Dargestellt wird die
+          Schrift, die auf Ihrem Gerät ohnehin installiert ist. Es wird dabei keine
+          Verbindung zu Google Fonts oder einem anderen Anbieter aufgebaut.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">5. Cookies und Statistik</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Diese Website setzt keine Cookies und bindet keine Analyse- oder Werbedienste ein.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="h-sub" style="font-size:var(--t-body);">6. Ihre Rechte</h2>
+        <p class="copy" style="margin-top:var(--sp-3);">
+          Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der
+          Verarbeitung, Datenübertragbarkeit und Widerspruch sowie das Recht, sich bei einer
+          Aufsichtsbehörde zu beschweren — für Hamburg beim Hamburgischen Beauftragten für
+          Datenschutz und Informationsfreiheit.
+        </p>
+      </section>
+
+      <p class="form__note" style="margin-top:var(--sp-4);">
+        Hinweis: Dieser Text ist eine Vorlage und ersetzt keine Rechtsberatung. Vor dem
+        Livegang müssen die Platzhalter gefüllt und der Text an die tatsächlich eingesetzten
+        Dienste (Hosting, Formular-Endpunkt, Analyse) angepasst werden.
+      </p>
+    </div>
+
+    <p style="margin-top:var(--sp-12);"><a class="arrow-link" href="#top" data-page="home">Zurück zur Startseite</a></p>
+  </div>
+</main><footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="nav__logo" href="#top" style="margin-bottom:var(--sp-3);">
+          <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Webgewerk
+        </a>
+        <p>KI-Agentur aus Hamburg. Wir planen, bauen und betreiben Agenten und
+          Automatisierungen für Unternehmen im deutschsprachigen Raum.</p>
+      </div>
+
+      <div>
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#leistungen">KI-Agenten</a></li>
+          <li><a href="#leistungen">Prozess-Automatisierung</a></li>
+          <li><a href="#leistungen">Web &amp; Produkt</a></li>
+          <li><a href="#leistungen">Beratung &amp; Enablement</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Agentur</h4>
+        <ul>
+          <li><a href="#vorgehen">Vorgehen</a></li>
+          <li><a href="#arbeiten">Arbeiten</a></li>
+          <li><a href="#preise">Preise</a></li>
+          <li><a href="#faq">Fragen</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a></li>
+          <li class="num">0xxxx xxxxxx</li>
+          <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal">
+      <p>Copyright © <span data-year>2026</span> Webgewerk (Prototyp, nie gegründet). Alle Rechte vorbehalten.</p>
+      <p>
+        <a href="#impressum" data-page="impressum">Impressum</a> ·
+        <a href="#datenschutz" data-page="datenschutz">Datenschutz</a> ·
+        <a href="#agb" data-page="agb">AGB</a>
+      </p>
+    </div>
+  </div>
+</footer></div>
+<div class="view" id="view-agb" hidden><header class="nav is-scrolled">
+  <div class="wrap nav__inner">
+    <a class="nav__logo" href="#top">
+      <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Webgewerk
+    </a>
+
+    <button class="nav__burger" type="button" aria-expanded="false"
+            aria-controls="nav-menu" aria-label="Menü öffnen"><span></span></button>
+
+    <nav class="nav__menu" id="nav-menu" aria-label="Hauptnavigation">
+      <a class="nav__link" href="#leistungen">Leistungen</a>
+      <a class="nav__link" href="#vorgehen">Vorgehen</a>
+      <a class="nav__link" href="#arbeiten">Arbeiten</a>
+      <a class="nav__link" href="#preise">Preise</a>
+      <a class="nav__link" href="#faq">Fragen</a>
+      <a class="btn btn--filled nav__cta" href="#kontakt">Prozess prüfen lassen</a>
+    </nav>
+  </div>
+</header><main id="main" class="section">
+  <div class="wrap" style="max-width:760px;">
+    <p class="eyebrow">Rechtliches</p>
+    <h1 class="h-section">Allgemeine Geschäftsbedingungen</h1>
+
+    <p class="copy" style="margin-top:var(--sp-8);">
+      Für diese Seite liegt noch kein geprüfter AGB-Text vor. Wir stellen ihn bewusst nicht
+      als Vorlage ein: AGB greifen unmittelbar in Ihre Verträge ein und gehören von einer
+      Anwältin oder einem Anwalt aufgesetzt — abgestimmt auf Ihre Leistungen, Zahlungsziele,
+      Haftung und Nutzungsrechte.
+    </p>
+
+    <p class="copy" style="margin-top:var(--sp-6);">
+      Bis dahin gelten die Vereinbarungen aus dem jeweiligen Angebot. Fragen dazu gern an
+      <a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a>.
+    </p>
+
+    <p style="margin-top:var(--sp-12);"><a class="arrow-link" href="#top" data-page="home">Zurück zur Startseite</a></p>
+  </div>
+</main><footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="nav__logo" href="#top" style="margin-bottom:var(--sp-3);">
+          <svg class="nav__mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="21" height="21" rx="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M6.5 9.2 L9.4 15.4 L12 10.6 L14.6 15.4 L17.5 9.2" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Webgewerk
+        </a>
+        <p>KI-Agentur aus Hamburg. Wir planen, bauen und betreiben Agenten und
+          Automatisierungen für Unternehmen im deutschsprachigen Raum.</p>
+      </div>
+
+      <div>
+        <h4>Leistungen</h4>
+        <ul>
+          <li><a href="#leistungen">KI-Agenten</a></li>
+          <li><a href="#leistungen">Prozess-Automatisierung</a></li>
+          <li><a href="#leistungen">Web &amp; Produkt</a></li>
+          <li><a href="#leistungen">Beratung &amp; Enablement</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Agentur</h4>
+        <ul>
+          <li><a href="#vorgehen">Vorgehen</a></li>
+          <li><a href="#arbeiten">Arbeiten</a></li>
+          <li><a href="#preise">Preise</a></li>
+          <li><a href="#faq">Fragen</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="mailto:kontakt@beispiel.de">kontakt@beispiel.de</a></li>
+          <li class="num">0xxxx xxxxxx</li>
+          <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal">
+      <p>Copyright © <span data-year>2026</span> Webgewerk (Prototyp, nie gegründet). Alle Rechte vorbehalten.</p>
+      <p>
+        <a href="#impressum" data-page="impressum">Impressum</a> ·
+        <a href="#datenschutz" data-page="datenschutz">Datenschutz</a> ·
+        <a href="#agb" data-page="agb">AGB</a>
+      </p>
+    </div>
+  </div>
+</footer></div>
+
+<script>
+/* Webgewerk — Interaktion.
+   Bewusst klein gehalten: kein Framework, kein Build-Schritt. */
+
+(function () {
+  'use strict';
+
+  /* ---- Navigation: transparent → erhoben, sobald gescrollt wird ---- */
+  var nav = document.querySelector('.nav');
+  var onScroll = function () {
+    if (!nav) return;
+    nav.classList.toggle('is-scrolled', window.scrollY > 8);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---- Mobiles Menü ---- */
+  var burger = document.querySelector('.nav__burger');
+  var menu = document.getElementById('nav-menu');
+  if (burger && menu) {
+    burger.addEventListener('click', function () {
+      var open = burger.getAttribute('aria-expanded') === 'true';
+      burger.setAttribute('aria-expanded', String(!open));
+      menu.classList.toggle('is-open', !open);
+      document.body.classList.toggle('is-locked', !open);
+    });
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) {
+        burger.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('is-open');
+        document.body.classList.remove('is-locked');
+      }
+    });
+  }
+
+  /* ---- Einblenden beim Scrollen ---- */
+  var reveals = document.querySelectorAll('[data-reveal]');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduced || !('IntersectionObserver' in window)) {
+    reveals.forEach(function (el) { el.classList.add('is-in'); });
+  } else {
+    // Erst jetzt verstecken — vorher war alles sichtbar und bleibt es,
+    // falls dieses Skript gar nicht läuft.
+    document.documentElement.classList.add('reveal-ready');
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+    reveals.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---- FAQ: immer nur eine Antwort offen ---- */
+  var faqs = Array.prototype.slice.call(document.querySelectorAll('.faq__item'));
+  faqs.forEach(function (item) {
+    item.addEventListener('toggle', function () {
+      if (!item.open) return;
+      faqs.forEach(function (other) { if (other !== item) other.open = false; });
+    });
+  });
+
+  /* ---- Kontaktformular ----
+     Ohne Backend: wir prüfen die Eingaben und öffnen eine vorbereitete E-Mail.
+     Sobald ein Endpunkt existiert, hier fetch() einsetzen. */
+  var form = document.querySelector('.contact__form');
+  if (form) {
+    var status = form.querySelector('.form__status');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      var data = new FormData(form);
+      var name = (data.get('name') || '').toString().trim();
+      var firma = (data.get('firma') || '').toString().trim();
+      var mail = (data.get('email') || '').toString().trim();
+      var text = (data.get('anliegen') || '').toString().trim();
+
+      var body =
+        'Name: ' + name + '\n' +
+        'Firma: ' + firma + '\n' +
+        'E-Mail: ' + mail + '\n\n' +
+        text + '\n';
+
+      window.location.href =
+        'mailto:kontakt@beispiel.de' +
+        '?subject=' + encodeURIComponent('Projektanfrage — ' + (firma || name)) +
+        '&body=' + encodeURIComponent(body);
+
+      if (status) {
+        status.hidden = false;
+        status.textContent =
+          'Danke, ' + (name.split(' ')[0] || 'gern') +
+          '. Wir haben eine E-Mail für Sie vorbereitet — bitte abschicken.';
+      }
+    });
+  }
+
+  /* ---- Jahreszahl im Footer ---- */
+  var year = document.querySelector('[data-year]');
+  if (year) year.textContent = String(new Date().getFullYear());
+})();
+
+
+/* Ansichtswechsel statt eigener HTML-Dateien */
+(function () {
+  var views = document.querySelectorAll('.view');
+  function show(name) {
+    views.forEach(function (v) { v.hidden = v.id !== 'view-' + name; });
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-page]');
+    if (!a) return;
+    e.preventDefault();
+    show(a.getAttribute('data-page'));
+  });
+  /* Jahreszahl in allen Ansichten setzen */
+  document.querySelectorAll('[data-year]').forEach(function (el) {
+    el.textContent = String(new Date().getFullYear());
+  });
+})();
+</script>
+
+<style>
+.entwurf-band{
+  position:fixed;left:0;right:0;bottom:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;gap:1.2em;flex-wrap:wrap;
+  padding:.72em 1.1em;
+  background:#0A0503;border-top:1px solid #9F3C12;
+  font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11px;letter-spacing:.06em;line-height:1.5;
+  color:#9A8578;text-decoration:none;text-align:center;
+}
+.entwurf-band b{color:#FFC46B;font-weight:500;letter-spacing:.18em;text-transform:uppercase}
+.entwurf-band .zurueck{color:#E8DDD2;white-space:nowrap}
+.entwurf-band:hover .zurueck{color:#FFC46B}
+@media (max-width:560px){.entwurf-band{font-size:10px;gap:.5em}}
+</style>
+<a class="entwurf-band" href="../../">
+  <span><b>Entwurf</b> &nbsp;Beispielseite von Kira Moewes &middot; Kontaktdaten sind Platzhalter</span>
+  <span class="zurueck">Alle Arbeiten &rarr;</span>
+</a>
+
+</body>
+</html>
